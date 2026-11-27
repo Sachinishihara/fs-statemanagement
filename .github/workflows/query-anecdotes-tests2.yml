@@ -1,8 +1,8 @@
-name: Query anecdotes tests 2
+﻿name: Query anecdotes tests 2
 
 on:
   push:
-    branches: [xmain]
+    branches: [main]
 
 jobs:
   playwright-tests:
@@ -37,3 +37,4 @@ jobs:
           name: query-anecdotes-notifications-playwright-report
           path: query-anecdotes-tests/playwright-report/
           retention-days: 14
+
