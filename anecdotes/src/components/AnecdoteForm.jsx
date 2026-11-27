@@ -3,17 +3,10 @@
 const AnecdoteForm = () => {
   const { add } = useAnecdoteActions()
 
-  const addAnecdote = event => {
+  const addAnecdote = async (event) => {
     event.preventDefault()
-
     const content = event.target.anecdote.value
-
-    add({
-      content,
-      id: crypto.randomUUID(),
-      votes: 0
-    })
-
+    await add(content)
     event.target.reset()
   }
 
@@ -21,9 +14,7 @@ const AnecdoteForm = () => {
     <div>
       <h2>create new</h2>
       <form onSubmit={addAnecdote}>
-        <div>
-          <input name="anecdote" />
-        </div>
+        <input name="anecdote" />
         <button type="submit">create</button>
       </form>
     </div>

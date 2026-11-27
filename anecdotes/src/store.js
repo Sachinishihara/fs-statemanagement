@@ -1,35 +1,58 @@
 ﻿import { create } from 'zustand'
+import anecdoteService from './services/anecdotes'
+import useNotificationStore from './notificationStore'
 
-const initialAnecdotes = [
-  'If it hurts, do it more often',
-  'Adding manpower to a late software project makes it later!',
-  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-  'Premature optimization is the root of all evil.',
-  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
-]
-
-const useAnecdoteStore = create(set => ({
-  anecdotes: initialAnecdotes.map((content, index) => ({
-    content,
-    id: String(index + 1),
-    votes: 0
-  })),
-
+const useAnecdoteStore = create((set, get) => ({
+  anecdotes: [],
   filter: '',
 
   actions: {
-    vote: id => set(state => ({
-      anecdotes: state.anecdotes.map(anecdote =>
-        anecdote.id === id
-          ? { ...anecdote, votes: anecdote.votes + 1 }
-          : anecdote
-      )
-    })),
+    initialize: async () => {
+      const anecdotes = await anecdoteService.getAll()
+      set({ anecdotes })
+    },
 
-    add: anecdote => set(state => ({
-      anecdotes: state.anecdotes.concat(anecdote)
-    })),
+    vote: async (id) => {
+      const anecdote = get().anecdotes.find(a => a.id === id)
+
+      const updated = await anecdoteService.update(
+        id, { ...anecdote, votes: anecdote.votes + 1 }
+      )
+
+      set(state => ({
+        anecdotes: state.anecdotes.map(a =>
+          a.id === id ? updated : a
+        )
+      }))
+
+      useNotificationStore.getState().showNotification(
+        `you voted '${anecdote.content}'`
+      )
+    },
+
+    add: async (content) => {
+      const newAnecdote = await anecdoteService.createNew(content)
+
+      set(state => ({
+        anecdotes: state.anecdotes.concat(newAnecdote)
+      }))
+
+      useNotificationStore.getState().showNotification(
+        `you created '${content}'`
+      )
+    },
+
+    remove: async (id) => {
+      const anecdote = get().anecdotes.find(a => a.id === id)
+
+      if (!anecdote || anecdote.votes !== 0) return
+
+      await anecdoteService.remove(id)
+
+      set(state => ({
+        anecdotes: state.anecdotes.filter(a => a.id !== id)
+      }))
+    },
 
     setFilter: filter => set({ filter })
   }

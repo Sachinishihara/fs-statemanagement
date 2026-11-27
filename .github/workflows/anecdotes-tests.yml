@@ -1,8 +1,8 @@
-name: Anecdotes tests
+﻿name: Anecdotes tests
 
 on:
   push:
-    branches: [xmain]
+    branches: [main]
 
 jobs:
   playwright-tests:
@@ -37,3 +37,4 @@ jobs:
           name: playwright-report
           path: anecdotes-tests/playwright-report/
           retention-days: 14
+
