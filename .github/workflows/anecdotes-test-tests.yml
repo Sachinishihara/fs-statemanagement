@@ -1,8 +1,8 @@
-name: Anecdotes tests check
+﻿name: Anecdotes tests check
 
 on:
   push:
-    branches: [xmain]
+    branches: [main]
 
 jobs:
   unit-tests:
@@ -33,3 +33,4 @@ jobs:
       - name: Verify unit tests fail against a broken store
         working-directory: anecdotes-tests
         run: node verify-tests-mutation.mjs
+

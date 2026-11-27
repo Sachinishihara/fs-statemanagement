@@ -62,10 +62,15 @@ export const useAnecdotes = () => {
   const anecdotes = useAnecdoteStore(state => state.anecdotes)
   const filter = useAnecdoteStore(state => state.filter)
 
-  return anecdotes.filter(anecdote =>
-    anecdote.content.toLowerCase().includes(filter.toLowerCase())
-  )
+  return anecdotes
+    .filter(anecdote =>
+      anecdote.content.toLowerCase().includes(filter.toLowerCase())
+    )
+    .toSorted((a, b) => b.votes - a.votes)
 }
 
 export const useAnecdoteActions = () =>
   useAnecdoteStore(state => state.actions)
+
+export default useAnecdoteStore
+
